@@ -23,6 +23,7 @@ Confidence: high
 Scope-risk: narrow
 Directive: Do not add final answers before the user has solved the problem
 Tested: git diff --cached reviewed before commit
-Not-tested: Deep-ML judge unless the problem solution was run separately"
+Not-tested: Deep-ML judge unless the problem solution was run separately
+Co-authored-by: OmX <omx@oh-my-codex.dev>"
 
 git push -u origin "$branch"

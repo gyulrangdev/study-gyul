@@ -16,3 +16,5 @@ This folder mirrors Deep-ML practice work.
 | Problem | Topic | Status |
 | --- | --- | --- |
 | [002 - Transpose of a Matrix](problems/002-transpose-of-a-matrix/) | Linear algebra basics | In progress |
+| [025 - Single Neuron with Backpropagation](problems/025-single-neuron-with-backpropagation/) | Backpropagation basics | In progress |
+| [026 - Implementing Basic Autograd Operations](problems/026-implementing-basic-autograd-operations/) | Autograd internals | In progress |
