@@ -33,7 +33,7 @@ def train_neuron(
         weights -= learning_rate * weight_gradients
         bias -= learning_rate * bias_gradient
 
-    updated_weights = np.round(weights, 4)
+    updated_weights = np.round(weights, 4).tolist()
     updated_bias = round(float(bias), 4)
 
     return updated_weights, updated_bias, mse_values
