@@ -108,5 +108,5 @@ print(x.grad)
 
 ## Notes
 
-- Do not add `solution.py` until you solve and submit the problem yourself.
-- The goal is to understand the engine, not memorize final code.
+- `solution.py` was added after the user explicitly requested the final answer for problem 26.
+- The goal is still to understand the engine, not memorize final code.
