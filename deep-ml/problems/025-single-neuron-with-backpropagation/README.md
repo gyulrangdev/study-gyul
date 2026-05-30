@@ -87,5 +87,5 @@ Then:
 
 ## Notes
 
-- Do not add `solution.py` until you solve and submit the problem yourself.
-- Keep final Deep-ML answer code separate from these warmups.
+- `solution.py` was added after the user explicitly requested the final answer because of time pressure.
+- Keep exploratory warmups separate from final Deep-ML answer code.
