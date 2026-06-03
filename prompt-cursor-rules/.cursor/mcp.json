@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "commands": {
+    "create-pr": {
+      "description": "Github PR 생성",
+      "steps": [
+        {
+          "name": "branch-name",
+          "description": "새 브랜치 이름 입력",
+          "input": {
+            "type": "text",
+            "default": "feature/{{date 'YYYY-MM-DD'}}-new-feature"
+          }
+        },
+        {
+          "name": "create-branch",
+          "description": "새 브랜치 생성",
+          "run": "git checkout -b {{branch-name}}"
+        },
+        {
+          "name": "commit-message",
+          "description": "커밋 메시지 입력",
+          "input": {
+            "type": "text",
+            "default": "feat: 새 기능 추가"
+          }
+        },
+        {
+          "name": "commit-changes",
+          "description": "변경사항 커밋",
+          "run": ["git add .", "git commit -m \"{{commit-message}}\""]
+        },
+        {
+          "name": "push-branch",
+          "description": "브랜치 푸시",
+          "run": "git push -u origin {{branch-name}}"
+        },
+        {
+          "name": "pr-title",
+          "description": "PR 제목 입력",
+          "input": {
+            "type": "text",
+            "default": "{{commit-message}}"
+          }
+        },
+        {
+          "name": "pr-body",
+          "description": "PR 설명 입력",
+          "input": {
+            "type": "textarea",
+            "default": "## 변경사항\n\n- \n\n## 관련 이슈\n\n- "
+          }
+        },
+        {
+          "name": "create-pr",
+          "description": "Github PR 생성",
+          "run": "gh pr create --title \"{{pr-title}}\" --body \"{{pr-body}}\" --base main"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "port": 9999,
+  "host": "localhost",
+  "commands": {
+    "start-server": {
+      "description": "MCP 서버 시작",
+      "run": "node server.js"
+    },
+    "stop-server": {
+      "description": "MCP 서버 중지",
+      "run": "kill $(lsof -t -i:9999)"
+    }
+  },
+  "routes": [
+    {
+      "path": "/api/github/pr",
+      "method": "POST",
+      "handler": {
+        "type": "command",
+        "command": "create-pr"
+      }
+    },
+    {
+      "path": "/api/status",
+      "method": "GET",
+      "handler": {
+        "type": "static",
+        "content": {
+          "status": "running",
+          "version": "1.0.0"
+        }
+      }
+    }
+  ],
+  "middleware": [
+    {
+      "type": "cors",
+      "options": {
+        "origin": "*",
+        "methods": ["GET", "POST"]
+      }
+    },
+    {
+      "type": "bodyParser",
+      "options": {
+        "json": true
+      }
+    }
+  ],
+  "auth": {
+    "type": "basic",
+    "users": [
+      {
+        "username": "admin",
+        "password": "password"
+      }
+    ]
+  }
+}

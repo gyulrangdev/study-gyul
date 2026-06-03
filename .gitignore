@@ -10,6 +10,9 @@ dist/
 build/
 .next/
 .vite/
+.anima/
+.turbo/
+coverage/
 
 .env
 .env.*
