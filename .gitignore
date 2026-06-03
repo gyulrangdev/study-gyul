@@ -1,2 +1,16 @@
 __pycache__/
 *.py[cod]
+.DS_Store
+
+node_modules/
+.venv/
+venv/
+
+dist/
+build/
+.next/
+.vite/
+
+.env
+.env.*
+!.env.example
