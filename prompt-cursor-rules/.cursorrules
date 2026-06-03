@@ -1,0 +1,10 @@
+{
+  "rules": [
+    {
+      "name": "Generate API Code",
+      "pattern": "API_URL: (https?://[^\\s]+)",
+      "command": "Generate API client code for the URL: $1",
+      "keybinding": ""
+    }
+  ]
+} 
