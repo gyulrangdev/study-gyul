@@ -8,7 +8,7 @@ intent="${1:-Preserve Deep-ML practice progress}"
 body="${2:-Updates Deep-ML notes, warmups, or solved problem files in the study repository.}"
 branch="$(git rev-parse --abbrev-ref HEAD)"
 
-git add AGENTS.md README.md deep-ml scripts/publish_deep_ml.sh
+git add AGENTS.md README.md ai/deep-ml scripts/publish_deep_ml.sh
 
 if git diff --cached --quiet; then
   echo "No Deep-ML changes to publish."
@@ -18,7 +18,7 @@ fi
 git commit \
   -m "$intent" \
   -m "$body" \
-  -m "Constraint: Deep-ML solutions should be saved under deep-ml/problems and mirrored to this remote repository
+  -m "Constraint: Deep-ML solutions should be saved under ai/deep-ml/problems and mirrored to this remote repository
 Confidence: high
 Scope-risk: narrow
 Directive: Do not add final answers before the user has solved the problem
