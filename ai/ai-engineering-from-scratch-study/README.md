@@ -23,7 +23,8 @@ AI 엔지니어링 기초를 직접 정리하고 이야기하면서 따라가는
 | 주차 | 진도 | 상태 |
 | --- | --- | --- |
 | 1주차 | 환경 설정, Matrix Transformation까지 | 예정 |
-| 2주차 | Probability and Distributions | 잠정 |
+| 2주차 | Chain Rule & Autodiff, Probability, Bayes' Theorem | 진행 |
+| 3주차 | Information Theory, Dimensionality Reduction | 진행 |
 
 ## 디렉토리 구조
 
@@ -35,7 +36,13 @@ ai-engineering-from-scratch-study/
 ├── weeks/
 │   ├── TEMPLATE.md
 │   ├── week-01-environment-setup-to-matrix-transformation.md
-│   └── week-02-probability-and-distributions.md
+│   ├── week-02-autodiff-probability-bayes.md
+│   ├── week-02-autodiff-scratch.py
+│   ├── week-02-probability-scratch.py
+│   ├── week-02-bayes-scratch.py
+│   ├── week-03-information-theory-and-dimensionality-reduction.md
+│   ├── week-03-information-theory-scratch.py
+│   └── week-03-dimensionality-reduction-scratch.py
 └── members/
     └── README.md
 ```
