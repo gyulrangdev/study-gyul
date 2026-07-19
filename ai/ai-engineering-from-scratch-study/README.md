@@ -38,11 +38,16 @@ ai-engineering-from-scratch-study/
 │   ├── week-01-environment-setup-to-matrix-transformation.md
 │   ├── week-02-autodiff-probability-bayes.md
 │   ├── week-02-autodiff-scratch.py
+│   ├── week-02-autodiff-practice.ipynb
 │   ├── week-02-probability-scratch.py
+│   ├── week-02-probability-practice.ipynb
 │   ├── week-02-bayes-scratch.py
+│   ├── week-02-bayes-practice.ipynb
 │   ├── week-03-information-theory-and-dimensionality-reduction.md
 │   ├── week-03-information-theory-scratch.py
-│   └── week-03-dimensionality-reduction-scratch.py
+│   ├── week-03-information-theory-practice.ipynb
+│   ├── week-03-dimensionality-reduction-scratch.py
+│   └── week-03-dimensionality-reduction-practice.ipynb
 └── members/
     └── README.md
 ```
