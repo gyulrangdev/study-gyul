@@ -29,15 +29,22 @@ def adam_optimizer(
     x = np.asarray(x0, dtype=float).copy()
     m = np.zeros_like(x)
     v = np.zeros_like(x)
+    beta1_power = 1.0
+    beta2_power = 1.0
 
-    for t in range(1, num_iterations + 1):
-        # TODO:
-        # 1. Compute current gradient g = grad(x).
-        # 2. Update first moment m.
-        # 3. Update second moment v with g**2.
-        # 4. Apply bias correction to m and v.
-        # 5. Update x.
-        raise NotImplementedError
+    for _ in range(num_iterations):
+        g = grad(x)
+        beta1_power *= beta1
+        beta2_power *= beta2
+
+        m *= beta1
+        m += (1.0 - beta1) * g
+        v *= beta2
+        v += (1.0 - beta2) * np.square(g)
+
+        x -= learning_rate * (m / (1.0 - beta1_power)) / (
+            np.sqrt(v / (1.0 - beta2_power)) + epsilon
+        )
 
     return x
 
