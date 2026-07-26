@@ -25,6 +25,7 @@ AI 엔지니어링 기초를 직접 정리하고 이야기하면서 따라가는
 | 1주차 | 환경 설정, Matrix Transformation까지 | 예정 |
 | 2주차 | Chain Rule & Autodiff, Probability, Bayes' Theorem | 진행 |
 | 3주차 | Information Theory, Dimensionality Reduction | 진행 |
+| 4주차 | Singular Value Decomposition, Tensor Operations | 진행 |
 
 ## 디렉토리 구조
 
@@ -47,7 +48,9 @@ ai-engineering-from-scratch-study/
 │   ├── week-03-information-theory-scratch.py
 │   ├── week-03-information-theory-practice.ipynb
 │   ├── week-03-dimensionality-reduction-scratch.py
-│   └── week-03-dimensionality-reduction-practice.ipynb
+│   ├── week-03-dimensionality-reduction-practice.ipynb
+│   ├── week-04-svd-practice.ipynb
+│   └── week-04-tensor-operations-practice.ipynb
 └── members/
     └── README.md
 ```
