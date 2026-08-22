@@ -26,6 +26,11 @@ AI 엔지니어링 기초를 직접 정리하고 이야기하면서 따라가는
 | 2주차 | Chain Rule & Autodiff, Probability, Bayes' Theorem | 진행 |
 | 3주차 | Information Theory, Dimensionality Reduction | 진행 |
 | 4주차 | Singular Value Decomposition, Tensor Operations | 진행 |
+| 5주차 | Numerical Stability, Norms & Distances | 진행 |
+| 6주차 | Statistics for ML, Sampling Methods | 진행 |
+| 7주차 | Linear Systems, Convex Optimization | 진행 |
+| 8주차 | Complex Numbers, Fourier Transform | 진행 |
+| 9주차 | Graph Theory, Stochastic Processes (Phase 1 완료) | 진행 |
 
 ## 디렉토리 구조
 
@@ -50,7 +55,17 @@ ai-engineering-from-scratch-study/
 │   ├── week-03-dimensionality-reduction-scratch.py
 │   ├── week-03-dimensionality-reduction-practice.ipynb
 │   ├── week-04-svd-practice.ipynb
-│   └── week-04-tensor-operations-practice.ipynb
+│   ├── week-04-tensor-operations-practice.ipynb
+│   ├── week-05-numerical-stability-practice.ipynb
+│   ├── week-05-norms-and-distances-practice.ipynb
+│   ├── week-06-statistics-for-ml-practice.ipynb
+│   ├── week-06-sampling-methods-practice.ipynb
+│   ├── week-07-linear-systems-practice.ipynb
+│   ├── week-07-convex-optimization-practice.ipynb
+│   ├── week-08-complex-numbers-practice.ipynb
+│   ├── week-08-fourier-transform-practice.ipynb
+│   ├── week-09-graph-theory-practice.ipynb
+│   └── week-09-stochastic-processes-practice.ipynb
 └── members/
     └── README.md
 ```
