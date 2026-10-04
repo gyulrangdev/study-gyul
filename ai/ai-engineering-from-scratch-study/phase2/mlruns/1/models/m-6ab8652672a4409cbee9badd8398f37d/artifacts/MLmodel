@@ -1,0 +1,26 @@
+artifact_path: /Users/gyul/study/study-gyul/ai/ai-engineering-from-scratch-study/phase2/mlruns/1/models/m-6ab8652672a4409cbee9badd8398f37d/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.skops
+    predict_fn: predict
+    python_version: 3.11.8
+  sklearn:
+    code: null
+    pickled_model: model.skops
+    serialization_format: skops
+    sklearn_version: 1.2.2
+    skops_trusted_types:
+    - sklearn.tree._tree.Tree
+    - numpy.dtype
+    - sklearn.ensemble._gb_losses.BinomialDeviance
+mlflow_version: 3.16.1
+model_id: m-6ab8652672a4409cbee9badd8398f37d
+model_size_bytes: 3905385
+model_uuid: m-6ab8652672a4409cbee9badd8398f37d
+prompts: null
+run_id: 4da0feb04ef149deaf25e0a850a26adb
+utc_time_created: '2026-10-04 13:09:31.198368'
