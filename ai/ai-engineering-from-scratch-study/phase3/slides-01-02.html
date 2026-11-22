@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>퍼셉트론과 다층 신경망</title>
+<style>
+:root{--ink:#12182B;--ink2:#1C2440;--ink3:#2C3760;--paper:#F6F3EC;--card:#FFFDF8;--line:#DDD7C8;
+--amber:#E9A23B;--teal:#1F7A70;--mute-d:#B9C0D4;--mute-l:#4A5266;--hot:#FFF4DC}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#0b0f1d;overflow:hidden;
+font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center}
+section{position:absolute;inset:0;padding:110px 128px 140px;display:none;flex-direction:column}
+section.on{display:flex}
+section.dark{background:var(--ink);color:#EEF0F7}
+section.light{background:var(--paper);color:#1B2238}
+.eyebrow{font-size:26px;font-weight:600;margin-bottom:18px}
+.dark .eyebrow{color:var(--amber)}.light .eyebrow{color:var(--teal)}
+h1{font-size:104px;font-weight:700;line-height:1.2}
+h2{font-size:60px;font-weight:700;line-height:1.25}
+h3{font-size:38px;font-weight:700;line-height:1.3}
+.lead{font-size:36px;line-height:1.5;margin-top:28px}
+.dark .lead,.dark .body{color:var(--mute-d)}.light .lead,.light .body{color:var(--mute-l)}
+.body{font-size:31px;line-height:1.55}
+.row{display:flex;gap:32px;margin-top:48px;align-items:stretch}
+.col{display:flex;flex-direction:column;gap:24px;flex:1}
+.card{flex:1;padding:36px;border-radius:20px;display:flex;flex-direction:column;gap:12px}
+.light .card{background:var(--card);border:2px solid var(--line)}
+.dark .card{background:var(--ink2);border:2px solid var(--ink3)}
+.card.hot{border-color:var(--amber)}.light .card.hot{background:var(--hot)}
+.num{font-size:160px;font-weight:700;line-height:1.1}
+.dark .num{color:var(--amber)}.light .num{color:var(--teal)}
+.label{font-size:32px;font-weight:600}
+.code{padding:34px 44px;border-radius:16px;background:var(--ink);color:#EEF0F7;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:34px;line-height:1.6;white-space:pre}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:600}
+.flow{display:flex;align-items:center;gap:20px;margin-top:48px}
+.step{flex:1;padding:28px;border-radius:20px;background:var(--card);border:2px solid var(--line)}
+.step h3{font-size:34px}.step p{font-size:28px;color:var(--mute-l);margin-top:8px}
+.arrow{font-size:48px;color:var(--teal);font-weight:700}
+table{border-collapse:collapse;font-size:32px;background:var(--card);border-radius:14px;overflow:hidden;flex:none}
+th{background:var(--ink);color:#EEF0F7;text-align:left;padding:16px 22px;font-weight:600}
+td{padding:16px 22px;border-top:1px solid var(--line);color:#1B2238}
+.foot{position:absolute;left:128px;bottom:56px;font-size:24px}
+.dark .foot{color:#8F98B3}.light .foot{color:#6B7388}
+#bar{position:fixed;left:0;bottom:0;height:5px;background:var(--amber);width:0;z-index:5}
+#cnt{position:fixed;right:20px;bottom:12px;font:14px sans-serif;color:#8F98B3;z-index:5}
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:34vh;overflow:auto;background:rgba(10,14,28,.96);color:#EEF0F7;
+padding:18px 28px;font-size:18px;line-height:1.7;display:none;z-index:9;border-top:2px solid var(--amber)}
+#notes.show{display:block}
+@media print{html,body{overflow:visible;height:auto;background:#fff}#stage{position:static;transform:none!important;width:auto;height:auto}
+section{position:relative;display:flex!important;width:1920px;height:1080px;page-break-after:always}
+#bar,#cnt,#notes{display:none!important}@page{size:1920px 1080px;margin:0}}
+</style>
+</head>
+<body>
+<div id="stage">
+
+<section class="dark" style="justify-content:center" data-note="안녕하세요. 오늘은 Phase 3의 첫 두 단원, 퍼셉트론과 다층 신경망을 다룹니다. 단원마다 10분씩, 총 20분입니다. 원문 내용에 노트북에서 직접 측정한 결과를 얹어서 설명드립니다.">
+<p class="eyebrow">Phase 3 · 딥러닝 코어 · 01–02단원</p>
+<h1>퍼셉트론에서<br>다층 신경망까지</h1>
+<p class="lead">뉴런 하나는 선 하나다. 그래서 쌓는다.</p>
+<p class="foot">AI Engineering from Scratch 스터디</p>
+</section>
+
+<section class="light" data-note="01단원은 뉴런 하나가 선 하나라는 걸 보이고, XOR로 한계를 확인합니다. 02단원은 그 한계를 층으로 넘는 구조와 순전파 계산을 봅니다. ⚠️ 표시는 원문과 제 측정이 달랐던 곳입니다.">
+<p class="eyebrow">오늘의 흐름</p>
+<h2>두 단원, 하나의 이야기</h2>
+<div class="row">
+<div class="card"><p class="num" style="font-size:96px">01</p><h3>퍼셉트론</h3><p class="body">뉴런 하나가 하는 일, 학습 규칙, 그리고 XOR이라는 벽.</p></div>
+<div class="card"><p class="num" style="font-size:96px">02</p><h3>다층 신경망과 순전파</h3><p class="body">층을 쌓으면 무엇이 달라지는지, 숫자를 직접 통과시켜 봅니다.</p></div>
+</div>
+<p class="lead">각 10분, 총 20분. 원문에 노트북 측정값을 얹어 설명합니다.</p>
+<p class="foot">오늘의 흐름</p>
+</section>
+
+<section class="dark" style="justify-content:center" data-note="Phase 2에서는 만들어진 모델을 썼습니다. Phase 3은 그 안을 열어 신경망을 밑바닥부터 만듭니다. 첫 벽돌이 퍼셉트론입니다.">
+<p class="num" style="font-size:200px">01</p>
+<h1>퍼셉트론</h1>
+<p class="lead">학습이란 숫자를 조정하는 일이다.</p>
+<p class="foot">01 퍼셉트론</p>
+</section>
+
+<section class="light" data-note="입력에 가중치를 곱해 더하고, 편향을 더한 값이 0 이상이면 1, 아니면 0입니다. 이게 전부입니다. 편향을 0으로 두면 [0,0]이 통과해 버려 AND가 안 됩니다.">
+<p class="eyebrow">01 · 뉴런 하나, 결정 하나</p>
+<h2>퍼셉트론은 가중합을 임계값과 비교한다</h2>
+<div class="flow">
+<div class="step"><h3>입력 x</h3><p>숫자 몇 개</p></div><span class="arrow">→</span>
+<div class="step"><h3>가중치 w를 곱함</h3><p>중요도를 매김</p></div><span class="arrow">→</span>
+<div class="step"><h3>합하고 편향 b</h3><p>임계값을 옮김</p></div><span class="arrow">→</span>
+<div class="step"><h3>0 이상이면 1</h3><p>예 / 아니오</p></div>
+</div>
+<div class="code" style="margin-top:44px">출력 = 1   (w · x + b ≥ 0 일 때)
+출력 = 0   (그 밖에는)</div>
+<p class="body" style="margin-top:36px">AND 게이트에서 편향 −1.5가 곧 임계값입니다. 편향이 0이면 [0, 0]도 통과해서 AND가 되지 않습니다.</p>
+<p class="foot">01 퍼셉트론 · 원문 “One Neuron, One Decision”</p>
+</section>
+
+<section class="light" data-note="왼쪽은 AND의 네 입력입니다. 채워진 점이 1이고 노란 선이 경계입니다. 가중치는 선을 기울이고 편향은 선을 밉니다. 같은 가중치로 편향만 바꾸면 AND가 OR이 됩니다.">
+<p class="eyebrow">01 · 결정 경계</p>
+<h2>가중치는 선을 기울이고, 편향은 선을 민다</h2>
+<div class="row" style="margin-top:28px;align-items:center">
+<svg viewBox="0 0 560 520" width="560" height="520" style="flex:none" aria-label="AND 게이트의 네 입력 점과 경계선">
+<rect width="560" height="520" rx="20" fill="#FFFDF8" stroke="#DDD7C8" stroke-width="2"/>
+<line x1="224" y1="44" x2="476" y2="296" stroke="#E9A23B" stroke-width="6"/>
+<circle cx="80" cy="440" r="26" fill="#FFFDF8" stroke="#1B2238" stroke-width="6"/>
+<circle cx="440" cy="440" r="26" fill="#FFFDF8" stroke="#1B2238" stroke-width="6"/>
+<circle cx="80" cy="80" r="26" fill="#FFFDF8" stroke="#1B2238" stroke-width="6"/>
+<circle cx="440" cy="80" r="26" fill="#1F7A70" stroke="#1F7A70" stroke-width="6"/>
+</svg>
+<div class="col">
+<div class="card"><h3>가중치 → 기울기</h3><p class="body">선이 어느 방향으로 눕는지를 정합니다.</p></div>
+<div class="card"><h3>편향 → 위치</h3><p class="body">선을 평행하게 밀어 올리거나 내립니다.</p></div>
+<div class="card hot"><h3>편향만 바꿔도 AND가 OR이 된다</h3><p class="body">같은 가중치에서 선만 밀었을 뿐입니다.</p></div>
+</div></div>
+<p class="foot">01 퍼셉트론 · 채운 점 = 1, 빈 점 = 0</p>
+</section>
+
+<section class="light" data-note="학습 규칙은 맞히면 가만히, 틀리면 틀린 방향으로 조금 미는 것입니다. 네 게이트가 전부 학습됩니다. 학습률을 0.01~10으로 바꿔도 경계 기울기는 −2.000으로 같았고 가중치 크기만 1000배 차이가 났습니다.">
+<p class="eyebrow">01 · 학습 규칙</p>
+<h2>틀리면 틀린 방향으로 조금 민다</h2>
+<div class="row">
+<div class="card"><h3>맞히면</h3><p class="body">아무것도 하지 않습니다.</p></div>
+<div class="card"><h3>틀리면</h3><p class="mono" style="font-size:32px;line-height:1.5">w ← w + η · (정답 − 예측) · x</p></div>
+<div class="card"><h3>결과</h3><p class="body">AND · OR · NAND · NOT이 모두 학습됩니다. 에포크 수는 원문(AND 4, OR 4, NOT 3)과 같았습니다.</p></div>
+</div>
+<div class="card hot" style="margin-top:32px;flex:none"><h3>학습률은 경계를 바꾸지 못한다</h3><p class="body">0.01에서 10까지 바꿔도 경계선의 기울기는 −2.000 그대로입니다. 0에서 시작하면 학습률은 가중치 전체에 곱해지는 상수일 뿐이고, 부호 판정은 그 상수에 영향받지 않습니다.</p></div>
+<p class="foot">01 퍼셉트론 · η = 학습률</p>
+</section>
+
+<section class="dark" data-note="원문은 AND가 4에포크에 수렴한다고 했는데 정확한 분수 연산으로는 학습률과 무관하게 6에포크입니다. float 편향이 −0.20000000000000004가 되어 z가 −2.8e-17이 되고, 판정이 z ≥ 0이라 이 찌꺼기가 예측을 뒤집어 두 에포크 일찍 끝납니다.">
+<p class="eyebrow">⚠️ 원문과 달랐던 곳</p>
+<h2>“4 에포크”는 수학이 아니라 부동소수점이다</h2>
+<div class="row">
+<div class="card"><p class="label">보통 실수 (float)</p><p class="num">4</p><p class="body">에포크 만에 수렴</p></div>
+<div class="card hot"><p class="label">정확한 분수 (Fraction)</p><p class="num">6</p><p class="body">에포크 — 학습률과 무관하게 전부</p></div>
+</div>
+<p class="body" style="margin-top:36px">편향이 −0.2가 아니라 −0.20000000000000004가 되고, 그 찌꺼기(z = −2.8e-17)가 판정 z ≥ 0을 뒤집어 학습을 두 에포크 일찍 끝냈습니다.</p>
+<p class="foot">01 퍼셉트론 · 노트북 5절 측정</p>
+</section>
+
+<section class="light" data-note="XOR은 학습률 5종, 초기값 40종으로 200번 시도해 200번 다 실패했습니다. 가능한 답이 없기 때문입니다. 2입력 함수 16개 중 14개는 퍼셉트론 하나로 되고, 못 하는 건 XOR과 XNOR뿐입니다.">
+<p class="eyebrow">01 · 벽을 만나다</p>
+<h2>XOR은 튜닝이 아니라 구조의 문제다</h2>
+<div class="row">
+<div class="card hot"><p class="num">200 / 200</p><p class="label">XOR 학습이 실패한 횟수</p><p class="body">학습률 5종 × 초기값 40종, 각 5000 에포크. 한 번도 수렴하지 않았습니다.</p></div>
+<div class="card"><p class="num">14 / 16</p><p class="label">퍼셉트론 하나로 되는 2입력 함수</p><p class="body">안 되는 건 XOR과 XNOR뿐. 둘 다 “두 입력이 다른가”라는 질문입니다.</p></div>
+</div>
+<p class="body" style="margin-top:36px">답이 아예 존재하지 않을 때는 하이퍼파라미터가 아니라 모델 구조를 바꿔야 합니다.</p>
+<p class="foot">01 퍼셉트론 · 노트북 6–7절 측정</p>
+</section>
+
+<section class="light" data-note="OR, NAND, 그 둘을 AND하는 뉴런 세 개를 쌓으면 XOR이 됩니다. 정답이 1인 두 입력이 은닉층에서 같은 점 (1,1)이 됩니다. 다만 이 가중치는 손으로 넣은 것이라는 점이 다음 슬라이드의 문제입니다.">
+<p class="eyebrow">01 · 해결: 쌓는다</p>
+<h2>은닉층은 좌표를 바꿔 놓는다</h2>
+<div class="row" style="align-items:center">
+<table style="width:1000px">
+<tr><th>입력</th><th>h1 = OR</th><th>h2 = NAND</th><th>출력 = AND</th></tr>
+<tr><td>[0, 0]</td><td>0</td><td>1</td><td>0</td></tr>
+<tr><td>[0, 1]</td><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>[1, 0]</td><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>[1, 1]</td><td>1</td><td>0</td><td>0</td></tr>
+</table>
+<div class="col">
+<div class="card hot"><h3>같은 점으로 모인다</h3><p class="body">정답이 1인 [0,1]과 [1,0]이 은닉층에서 같은 점 (1,1)이 됩니다.</p></div>
+<p class="body">점은 그대로이고 좌표만 바뀌었습니다. 그러면 출력층은 선 하나로 끝납니다.</p>
+</div></div>
+<p class="foot">01 퍼셉트론 · 원문 8절, 가중치를 손으로 넣은 2-2-1</p>
+</section>
+
+<section class="light" data-note="계단 함수를 시그모이드로 바꾸고 역전파로 2-2-1을 학습시키면 가중치를 스스로 찾습니다. 그 답은 손으로 넣은 것과 다르지만 은닉층이 양성 입력을 한 점으로 모으는 구조는 같습니다. 역전파는 03단원에서 다룹니다.">
+<p class="eyebrow">01 · 다음 단원으로</p>
+<h2>손으로 넣은 가중치를 역전파가 찾아낸다</h2>
+<div class="row">
+<div class="card"><h3>스스로 찾는다</h3><p class="body">계단 함수를 시그모이드로 바꾸면, OR·NAND라고 알려 주지 않아도 가중치를 찾습니다.</p></div>
+<div class="card"><h3>답이 다르다</h3><p class="body">찾은 가중치는 손으로 넣은 것과 다릅니다. 정답 가중치는 하나가 아닙니다.</p></div>
+<div class="card hot"><h3>해석이 안 된다</h3><p class="body">그래서 학습된 가중치는 보통 읽어 낼 수 없습니다. 은닉층의 구조만 닮습니다.</p></div>
+</div>
+<p class="lead">이 다리를 건너면 02단원과 03단원입니다.</p>
+<p class="foot">01 퍼셉트론 · 원문 9절</p>
+</section>
+
+<section class="dark" style="justify-content:center" data-note="01단원의 결론은 쌓으면 된다는 것이었습니다. 02단원은 쌓은 구조를 코드로 어떻게 표현하고 숫자가 어떻게 흘러가는지를 봅니다.">
+<p class="num" style="font-size:200px">02</p>
+<h1>다층 신경망과 순전파</h1>
+<p class="lead">층을 쌓으면 코드는 어떻게 바뀌는가.</p>
+<p class="foot">02 다층 신경망</p>
+</section>
+
+<section class="light" data-note="시그모이드는 z가 0 근처일 때만 민감합니다. z가 4만 돼도 기울기가 0.018 이하입니다. 이 표는 제가 계산한 값이고, 뒤의 가중치 배율 실험과 직결됩니다.">
+<p class="eyebrow">02 · 활성화 함수</p>
+<h2>시그모이드는 0 근처에서만 민감하다</h2>
+<div class="row" style="align-items:center">
+<table style="width:960px">
+<tr><th>z</th><th>σ(z)</th><th>기울기</th></tr>
+<tr><td>0</td><td>0.50000</td><td>0.25000</td></tr>
+<tr><td>2</td><td>0.88080</td><td>0.10499</td></tr>
+<tr><td>4</td><td>0.98201</td><td>0.01766</td></tr>
+<tr><td>6</td><td>0.99753</td><td>0.00247</td></tr>
+<tr><td>10</td><td>0.99995</td><td>0.00005</td></tr>
+</table>
+<div class="col">
+<div class="card hot"><h3>|z| ≥ 4 면 둔하다</h3><p class="body">기울기가 0.018 이하로 떨어집니다.</p></div>
+<p class="body">큰 가중치는 계단처럼, 작은 가중치는 전부 0.5 언저리로 만듭니다.</p>
+</div></div>
+<p class="foot">02 다층 신경망 · 기울기 = σ(z)(1 − σ(z))</p>
+</section>
+
+<section class="light" data-note="순전파는 같은 연산을 층마다 반복합니다. W의 모양은 (이 층 뉴런 수, 앞 층 뉴런 수)입니다. 순수 파이썬 zip은 차원이 틀려도 에러 없이 가중치를 버리고 돌아가서, numpy가 바로 터뜨리는 게 고마운 일입니다.">
+<p class="eyebrow">02 · 순전파</p>
+<h2>순전파는 같은 연산을 층마다 반복한다</h2>
+<div class="row">
+<div class="col">
+<div class="code">for 층 in 층들:
+    x = 활성화(W @ x + b)</div>
+<p class="body">곱하고, 더하고, 활성화. 층이 100개여도 코드는 그대로입니다.</p>
+</div>
+<div class="col">
+<div class="card"><h3>모양 규칙</h3><p class="body">W의 모양 = (이 층의 뉴런 수, 앞 층의 뉴런 수). 2-5-3 신경망의 첫 W는 (5, 2)입니다.</p></div>
+<div class="card hot"><h3>⚠️ 조용한 버그</h3><p class="body">순수 파이썬의 zip은 짧은 쪽에 맞춰 조용히 잘라 버립니다. numpy가 바로 터뜨리는 건 고마운 일입니다.</p></div>
+</div></div>
+<p class="foot">02 다층 신경망 · 위 코드는 개념을 줄인 의사코드</p>
+</section>
+
+<section class="light" data-note="손으로 넣은 XOR 가중치 전체에 같은 배율을 곱했습니다. 배율 1에서는 가장 애매한 출력이 0.43이라 판정이 갈리지 않고 배율 5부터 4개를 다 맞힙니다. 큰 가중치란 z를 |z| ≥ 4로 밀어 넣을 만큼 큰 가중치입니다.">
+<p class="eyebrow">⚠️ 02 · 가중치 배율 실험</p>
+<h2>“큰 가중치”의 기준은 평평한 구간으로 밀어 넣는 크기다</h2>
+<div class="row" style="margin-top:36px;align-items:center">
+<table style="width:1000px">
+<tr><th>배율</th><th>[0,0] 출력</th><th>[0,1] 출력</th><th>맞힌 수</th></tr>
+<tr><td>1</td><td>0.42436</td><td>0.43657</td><td>2 / 4</td></tr>
+<tr><td>2</td><td>0.36425</td><td>0.48107</td><td>2 / 4</td></tr>
+<tr><td>5</td><td>0.10684</td><td>0.85087</td><td>4 / 4</td></tr>
+<tr><td>10</td><td>0.00715</td><td>0.99236</td><td>4 / 4</td></tr>
+<tr><td>20</td><td>0.00005</td><td>0.99995</td><td>4 / 4</td></tr>
+</table>
+<div class="col">
+<div class="card hot"><h3>작으면 0.5로 뭉개진다</h3><p class="body">배율 2 이하에서는 4개 중 2개만 맞습니다.</p></div>
+<p class="body">평평하다는 건 기울기가 0이라 학습에는 독입니다. 03단원에서 다시 봅니다.</p>
+</div></div>
+<p class="foot">02 다층 신경망 · XOR 가중치 전체에 같은 배율을 곱함</p>
+</section>
+
+<section class="dark" data-note="원문은 무작위 가중치 신경망의 정확도 17.5%를 보고 성능이 나쁘다고 했습니다. 시드를 100가지로 바꿔 보니 82.5%도 32번 나왔습니다. 둘 다 한 클래스만 답한 같은 상태이고 출력이 0.5의 위냐 아래냐만 다릅니다.">
+<p class="eyebrow">⚠️ 원문과 달랐던 곳</p>
+<h2>학습 전 정확도 17.5%와 82.5%는 같은 상태다</h2>
+<div class="row">
+<div class="card"><p class="num">17.5%</p><p class="label">43번</p><p class="body">200점 전부 “안쪽”이라고 답함</p></div>
+<div class="card hot"><p class="num">82.5%</p><p class="label">32번</p><p class="body">200점 전부 “바깥”이라고 답함</p></div>
+</div>
+<p class="body" style="margin-top:36px">무작위 2-8-1 신경망, 시드 100가지. 75번은 한 클래스만 답했습니다. 학습 전 신경망은 틀리는 게 아니라 입력을 보지 않습니다.</p>
+<p class="foot">02 다층 신경망 · 원문은 17.5%를 “무작위는 성능이 나쁘다”로 해석</p>
+</section>
+
+<section class="light" data-note="은닉 뉴런 384개를 고정하고 한 층 vs 두 층의 파라미터를 비교했습니다. 입력 2차원에서는 넓은 쪽이 약 22배 쌉니다. 784차원부터 깊은 쪽이 싸집니다. 연습문제 3번의 784-256-128-10은 235,146개입니다.">
+<p class="eyebrow">⚠️ 02 · 넓게 vs 깊게</p>
+<h2>“깊은 게 파라미터가 적다”는 입력이 클 때만 맞다</h2>
+<div class="row" style="margin-top:36px;align-items:center">
+<table style="width:1040px">
+<tr><th>입력 차원</th><th>넓게 (한 층)</th><th>깊게 (두 층)</th><th>싼 쪽</th></tr>
+<tr><td>2</td><td>1,537</td><td>33,793</td><td>넓게</td></tr>
+<tr><td>10</td><td>4,609</td><td>35,841</td><td>넓게</td></tr>
+<tr><td>100</td><td>42,634</td><td>60,042</td><td>넓게</td></tr>
+<tr><td>784</td><td>305,290</td><td>235,146</td><td>깊게</td></tr>
+</table>
+<div class="col"><div class="card hot"><h3>뒤집히는 지점</h3><p class="body">입력→은닉은 (입력 × 뉴런), 은닉→은닉은 (뉴런 × 뉴런)이라 어느 쪽이 큰지에 달렸습니다.</p></div></div>
+</div>
+<p class="body" style="margin-top:28px">은닉 뉴런 384개로 고정. 이번 예제의 2입력에서는 넓게가 20배 넘게 쌉니다.</p>
+<p class="foot">02 다층 신경망 · 파라미터 = Σ (앞 × 뒤 + 뒤)</p>
+</section>
+
+<section class="dark" data-note="뉴런 하나는 선 하나이고, 선 하나로 안 되는 게 있으며, 쌓으면 됩니다. 남은 문제는 쌓은 걸 어떻게 학습시키느냐이고 그게 다음 단원인 역전파입니다. 질문 받겠습니다.">
+<p class="eyebrow">한 줄 정리</p>
+<h2>뉴런 하나는 선 하나다. 그래서 쌓는다.</h2>
+<div class="row" style="margin-top:56px">
+<div class="card"><p class="label">01</p><h3>뉴런 하나는 선 하나</h3><p class="body">가중합과 임계값, 그리고 경계선.</p></div>
+<div class="card"><p class="label">01</p><h3>선 하나로 안 되는 게 있다</h3><p class="body">XOR은 200번 중 200번 실패.</p></div>
+<div class="card"><p class="label">02</p><h3>쌓으면 된다</h3><p class="body">순전파는 같은 연산의 반복.</p></div>
+<div class="card hot"><p class="label">03</p><h3>쌓은 걸 어떻게 학습시키나</h3><p class="body">다음 단원, 역전파.</p></div>
+</div>
+<p class="foot">AI Engineering from Scratch 스터디 · Phase 3 · 01–02단원</p>
+</section>
+
+</div>
+<div id="bar"></div><div id="cnt"></div>
+<div id="notes"></div>
+<script>
+(function(){
+var S=[].slice.call(document.querySelectorAll('section')),i=0,st=document.getElementById('stage');
+var bar=document.getElementById('bar'),cnt=document.getElementById('cnt'),nt=document.getElementById('notes');
+function fit(){var k=Math.min(innerWidth/1920,innerHeight/1080);st.style.transform='translate(-50%,-50%) scale('+k+')';}
+function show(n){i=Math.max(0,Math.min(S.length-1,n));
+S.forEach(function(s,j){s.classList.toggle('on',j===i)});
+bar.style.width=((i+1)/S.length*100)+'%';cnt.textContent=(i+1)+' / '+S.length;
+nt.textContent=S[i].getAttribute('data-note')||'';
+try{history.replaceState(null,'','#'+(i+1))}catch(e){}}
+addEventListener('resize',fit);
+addEventListener('keydown',function(e){
+if(['ArrowRight','ArrowDown','PageDown',' ','Enter'].indexOf(e.key)>=0){e.preventDefault();show(i+1)}
+else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].indexOf(e.key)>=0){e.preventDefault();show(i-1)}
+else if(e.key==='Home')show(0);else if(e.key==='End')show(S.length-1);
+else if(e.key==='n'||e.key==='N')nt.classList.toggle('show');
+else if(e.key==='f'||e.key==='F'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}});
+addEventListener('click',function(e){show(e.clientX>innerWidth/3?i+1:i-1)});
+var h=parseInt(location.hash.slice(1),10);fit();show(h?h-1:0);
+})();
+</script>
+</body>
+</html>
